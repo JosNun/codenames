@@ -1,0 +1,58 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Codenames</title>
+
+
+
+  <link rel="stylesheet" href="styles/main.css">
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    let socket = io();
+  </script>
+</head>
+
+
+<body>
+  <div class="game-setup-container">
+    <h1>Welcome to Codenames!</h1>
+    <span>Find a game:</span>
+    <input type="text" placeholder="game name" class="game-name-textbox" list="games-list">
+    <datalist id="games-list"></datalist>
+    <br>
+    <div class="join-game-setup">
+      <h3>Game found</h3>
+
+      <label for="nickname-input">Nickname</label>
+      <input type="text" id="nickname-input">
+      <span></span>
+
+      <h5>Choose your team</h5>
+      <input type="radio" class="team-selector" name="team" id="blue-team-radio" value="blue" checked>
+      <label for="blue-team-radio">Blue</label>
+      <br>
+      <input type="radio" class="team-selector" name="team" id="red-team-radio" value="red">
+      <label for="red-team-radio">Red</label>
+      <br>
+
+      <h5>Choose your role</h5>
+      <input type="radio" class="role-selector" name="role" id="role-detective-radio" value="detective" checked>
+      <label for="role-detective-radio">Detective</label>
+      <br>
+      <input type="radio" class="role-selector" name="role" id="role-spymaster-radio" value="spymaster">
+      <label for="role-spymaster-radio">Spymaster</label>
+    </div>
+    <button class="create-game-btn">
+      <span>Create Game</span>
+    </button>
+  </div>
+
+  <script src="js/lib.js"></script>
+  <script src="js/menu.js"></script>
+</body>
+
+</html>

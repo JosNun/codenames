@@ -1,0 +1,49 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Admin</title>
+</head>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  let socket = io();
+</script>
+
+<body>
+  <button onclick="getGames()">Get Games</button>
+  <ul id="games-list">
+  </ul>
+
+  <script>
+    socket.on('game list', (games) => {
+      updateGamesList(games);
+    })
+
+    function getGames() {
+      socket.emit('game list request', socket.id);
+    }
+
+    function updateGamesList(games) {
+      let gamesList = document.getElementById('games-list');
+      gamesList.innerHTML = '';
+      games.forEach((game, i) => {
+        let li = document.createElement('li');
+        let pre = document.createElement('pre');
+        pre.appendChild(document.createTextNode(JSON.stringify(game, null, 2)));
+        li.appendChild(pre);
+        gamesList.appendChild(li);
+      })
+    }
+
+    document.getElementById('games-list').addEventListener('click', (e) => {
+      console.log(e);
+      e.target.innerHTML = '';
+    })
+
+  </script>
+</body>
+
+</html>

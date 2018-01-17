@@ -1,0 +1,30 @@
+.game-setup-container {
+  text-align: center;
+  transition-duration: 0.3s;
+}
+
+.join-game-setup {
+  position: relative;
+  height: 0;
+  overflow: hidden;
+  transition-duration: 0.3s;
+}
+
+label {
+  position: relative;
+}
+
+label::after {
+  content: attr(data-sub);
+  padding-left: 15px;
+}
+
+input + span::after {
+  content: attr(data-sub);
+  padding-left: 15px;
+  position: absolute;
+}
+
+input[type='text'].invalid {
+  background-color: rgb(255, 87, 87);
+}

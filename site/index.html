@@ -51,8 +51,39 @@
     </button>
   </div>
 
+  <div class="game-board"></div>
+
+  <div class="chat-box">
+    <div class="chat-messages"></div>
+    <form class="chat-form">
+      <input type="text" name="message-box" class="message-box" autocomplete="off">
+      <button type="submit" class="chat-send-btn"></button>
+    </form>
+  </div>
+
+  <div class="game-status">
+    <ul class="remaining-cards status-card">
+      <h3>Game Info:</h3>
+      <li class="blue-text">Blue cards remaining:
+        <span class="blue-cards-remaining"></span>
+      </li>
+      <li class="red-text">Red cards remaining:
+        <span class="red-cards-remaining"></span>
+      </li>
+    </ul>
+    <ul class="blue-player-list status-card">
+      <h3>Blue Players:</h3>
+    </ul>
+    <ul class="red-player-list status-card">
+      <h3>Red Players:</h3>
+    </ul>
+  </div>
+
   <script src="js/lib.js"></script>
   <script src="js/menu.js"></script>
+  <script src="js/chat.js"></script>
+  <script src="js/status.js"></script>
+  <script src="js/game.js"></script>
 </body>
 
 </html>

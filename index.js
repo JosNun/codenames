@@ -14,6 +14,7 @@ app.use(express.static('site'));
 
 let wordList;
 let games = [];
+global.game;
 
 loadWordList();
 
@@ -64,6 +65,55 @@ io.on('connection', function(socket) {
 
     callback(gameNames);
   });
+
+  socket.on('send final game', () => {
+    console.log('Sending final game');
+    console.log(games);
+
+    games.forEach((game) => {
+      io.to(game.id).emit('game update', game);
+    });
+  });
+
+  socket.on('card guess', (currentGame, guess) => {
+    console.log(`Looking for card ${guess}`);
+    console.log(currentGame);
+    let game = findGame(currentGame);
+    console.log(game);
+    for (let i = 0; i < game.board.length; i++) {
+      if (game.board[i].word.toLowerCase() === guess.toLowerCase()) {
+        game.board[i].revealed = true;
+        game.teams[game.board[i].team].cardsRemaining--;
+        break;
+      }
+    }
+    game.updateClients();
+  });
+
+  socket.on('chat message', (payload) => {
+    console.log('message recieved');
+    if (payload.room === 'global') {
+      socket.broadcast.emit('chat message', payload);
+    } else {
+      socket.to(payload.room).emit('chat message', payload);
+    }
+  });
+
+  socket.on('request game update', (id, room) => {
+    let game = findGame(room);
+    let role;
+    for (let player of game.players) {
+      if (player.socket === id) {
+        role = player.role;
+      }
+    }
+
+    if (role === 'spymaster') {
+      socket.emit('game update', findGame(room).makeSpymasterCopy());
+    } else {
+      socket.emit('game update', findGame(room).makeClientCopy());
+    }
+  });
 });
 
 http.listen(3000, function() {
@@ -86,27 +136,24 @@ class Game {
       blue: {
         color: 'blue',
         cards: 8,
-        cardsRemaining: 8,
       },
       red: {
         color: 'red',
         cards: 8,
-        cardsRemaining: 8,
       },
       neutral: {
         color: 'tan',
         cards: 7,
-        cardsRemaining: 7,
       },
       assassin: {
         color: 'black',
         cards: 1,
-        cardsRemaining: 1,
       },
     };
 
     this.generateBoard();
     games.push(this);
+    global.game = this;
   }
 
   /**
@@ -122,34 +169,45 @@ class Game {
       this.teams['red'].isFirst = true;
     }
 
+    this.teams.blue.cardsRemaining = this.teams.blue.cards;
+    this.teams.red.cardsRemaining = this.teams.red.cards;
+
+    // Make the cards
     for (let i = 0; i < 25; i++) {
       let word = getRandomWord();
+      let team;
       while (this.usedWords.includes(word)) {
         // console.log(word + ' is in used words list');
         word = getRandomWord();
       }
+
+      if (this.teams.blue.cards > 0) {
+        this.teams.blue.cards--;
+        team = 'blue';
+      } else if (this.teams.red.cards > 0) {
+        this.teams.red.cards--;
+        team = 'red';
+      } else if (this.teams.assassin.cards > 0) {
+        this.teams.assassin.cards--;
+        team = 'assassin';
+      } else {
+        this.teams.neutral.cards--;
+        team = 'neutral';
+      }
       this.usedWords.push(word);
 
-      this.board.push(new Card(word));
+      let card = new Card(word, team);
+      console.log(JSON.stringify(card, null, 2));
+      this.board.push(card);
     }
 
-    this.board.forEach((card, i) => {
-      if (this.teams['blue'].cards > 0) {
-        this.teams['blue'].cards--;
-        card.team = 'blue';
-      } else if (this.teams['red'].cards > 0) {
-        this.teams['red'].cards--;
-        card.team = 'red';
-      } else if (this.teams['assassin'].cards > 0) {
-        this.teams['assassin'].cards--;
-        card.team = 'assassin';
-      } else {
-        this.teams['neutral'].cards--;
-        card.team = 'neutral';
-      }
+    // delete total cards amount (useless now anyway)
+    Object.keys(this.teams).forEach((key) => {
+      delete this.teams[key].cards;
     });
+
     this.board = shuffle(this.board);
-    // console.log(this.board);
+    console.log(this.board);
   }
 
   /**
@@ -199,6 +257,7 @@ class Game {
         team: req.team,
         role: req.role,
       });
+      io.sockets.connected[req.socketId].join(this.id);
       this.updateClients();
     }
 
@@ -207,25 +266,47 @@ class Game {
 
   /**
    * make a simplified version of the game object to send to the client
-   * @return {Object} - striped version of the game object
+   * @return {Object} - Stripped version of the game object
    */
   makeClientCopy() {
+    let clientGame = {
+      teams: this.teams,
+      usedWords: this.usedWords,
+      board: (() => {
+        let cards = [];
+        this.board.forEach((card, i) => {
+          let newCard = {
+            word: card.word,
+            team: (() => {
+              if (card.revealed) {
+                return card.team;
+              }
+            })(),
+          };
+          cards.push(newCard);
+        });
+        return cards;
+      })(),
+      players: this.players,
+      id: this.id,
+    };
+    console.log(`Sending client game`);
+
+    return clientGame;
+  }
+
+  /**
+   * Make a game object for a spymaster
+   * @return {Object} - stripped version of the game object
+   */
+  makeSpymasterCopy() {
     let clientGame = (({id, players, board, teams}) => ({
       id,
       players,
       board,
       teams,
     }))(this);
-    // delete the team info so we don't send it to the client
-    clientGame.board.forEach((card) => {
-      delete card.team;
-    });
-
-    // and additional junk
-    Object.keys(clientGame.teams).forEach((key) => {
-      delete clientGame.teams[key].cards;
-    });
-
+    console.log('Sending Spymaster game');
     return clientGame;
   }
 
@@ -233,7 +314,13 @@ class Game {
    * update the client versions of the game
    */
   updateClients() {
-    io.emit('game update', this.makeClientCopy());
+    for (let player of this.players) {
+      if (player.role === 'spymaster') {
+        io.to(player.socket).emit('game update', this.makeSpymasterCopy());
+      } else {
+        io.to(player.socket).emit('game update', this.makeClientCopy());
+      }
+    }
   }
 }
 

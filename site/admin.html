@@ -13,7 +13,9 @@
 </script>
 
 <body>
+  <button onclick="sendEndGame()">Send End Game</button>
   <button onclick="getGames()">Get Games</button>
+
   <ul id="games-list">
   </ul>
 
@@ -36,6 +38,11 @@
         li.appendChild(pre);
         gamesList.appendChild(li);
       })
+    }
+
+    function sendEndGame() {
+      socket.emit('send final game');
+      console.log('sending users final game');
     }
 
     document.getElementById('games-list').addEventListener('click', (e) => {

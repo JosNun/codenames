@@ -11,7 +11,6 @@ let createGameBtn = document.querySelector('.create-game-btn');
 let currentGame;
 
 let gameQuery = debounce((e) => {
-  console.log('sending game query request');
   socket.emit('game query', socket.id, e.target.value);
 }, 250);
 
@@ -19,7 +18,6 @@ addListenerAsync(gameQuery, gameNameBox, 'input');
 addListenerAsync(
   () => {
     let gameName = gameNameBox.value;
-    console.log('pinging game: ' + gameName);
     if (gameLogin.gameExists) {
       requestGameJoin(gameName);
     } else {
@@ -48,6 +46,11 @@ function requestGameJoin(gameName) {
     role: role,
   };
 
+  gameInfo.role = role;
+  gameInfo.room = gameName;
+  gameInfo.playerName = name;
+  gameInfo.team = team;
+
   socket.emit('join game', request);
 }
 
@@ -71,24 +74,17 @@ socket.on('game join response', (success, error) => {
   if (success) {
     document.querySelector('.game-setup-container').style.transform =
       'translateY(-100%) scaleY(0)';
+    init();
+    socket.emit('request game update', socket.id, gameInfo.room);
     console.log('Game successfully joined');
   } else {
     console.log('Error joining game: ' + error);
   }
-
-  // let gameSocket = io(`/${gameId}`);
-
-  // gameSocket.on('announcement', (msg) => {
-  //   console.log('Announcement: ' + msg);
-  // });
-
-  // gameSocket.on('game update', (game) => {
-  //   console.log('recieved game update: ' + game);
-  // });
 });
 
 // When the server pushes new game data
 socket.on('game update', (game) => {
+  console.log('game update recieved');
   currentGame = game;
   gameLogin.update(currentGame);
 });
@@ -100,8 +96,8 @@ socket.on('game update', (game) => {
 function updateGamesList(games) {
   socket.emit('games list request', (games) => {
     let gamesList = document.getElementById('games-list');
-    while (gamesList.firstChild) {
-      gamesList.removeChild(gamesList.firstChild);
+    while (gamesList.Child) {
+      gamesList.removeChild(gamesList.Child);
     }
 
     games.forEach((game) => {
@@ -160,13 +156,11 @@ function gameHasPlayer(playerName, game) {
   let playerExists = false;
 
   game.players.forEach((player) => {
-    console.log(playerName);
     if (player.name.toLowerCase() === playerName.toLowerCase()) {
       playerExists = true;
     }
   });
 
-  console.log('Player exists? ' + playerExists);
   return playerExists;
 }
 
@@ -188,7 +182,6 @@ let gameLogin = {
   },
   update: function(game) {
     game = game || currentGame;
-    console.log('updating login');
     let team;
     let playerName = this.nameBox.value;
     let teamRadio = document.querySelector('input[name="team"]:checked');

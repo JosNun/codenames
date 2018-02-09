@@ -13,6 +13,16 @@
 </script>
 
 <body>
+
+  <input type="text" name="emit-name" id="emit-name">
+  <input type="text" name="emit-value" id="emit-value">
+  <input type="text" name="emit-addtl" id="emit-addtl">
+  <button onclick="sendEmit()">Broadcast</button>
+
+  <br>
+  <br>
+
+
   <button onclick="sendEndGame()">Send End Game</button>
   <button onclick="getGames()">Get Games</button>
 
@@ -50,6 +60,17 @@
       e.target.innerHTML = '';
     })
 
+  </script>
+
+  <script>
+    function sendEmit() {
+      let params = [];
+      params.push(document.getElementById('emit-name').value);
+      params.push(document.getElementById('emit-value').value);
+      params.push(document.getElementById('emit-addtl').value);
+
+      socket.emit('emit request', params);
+    }
   </script>
 </body>
 

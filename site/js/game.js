@@ -1,5 +1,11 @@
 let gameInfo = {};
 
+socket.on('turn update', (newTurn, game) => {
+  console.log('turn update recieved');
+  gameInfo.currentTurn = newTurn;
+  turnController.updateUi();
+});
+
 /**
  * setup the site for the game view
  */
@@ -20,8 +26,13 @@ function init() {
       div.classList.add(`revealed-${card.team}`);
       div.classList.add(`team-${card.team}`);
     }
-    if (gameInfo.role !== 'spymaster') {
+    if (
+      gameInfo.role !== 'spymaster' &&
+      gameInfo.currentTurn === gameInfo.team
+    ) {
       div.addEventListener('click', guessCard);
+    } else {
+      div.classList.add('disabled');
     }
     gameBoard.appendChild(div);
   });
@@ -53,9 +64,5 @@ let updateGameUi = function(gameUpdate) {
  * @param {*} e event object
  */
 function guessCard(e) {
-  console.log(
-    `Event ${e} clicked. Sending alert for card ${e.target.innerText}`
-  );
-  console.log(currentGame);
   socket.emit('card guess', currentGame.id, e.target.innerText);
 }

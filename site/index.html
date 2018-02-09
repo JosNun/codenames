@@ -1,16 +1,16 @@
-<html lang="en">
+<html lang='en'>
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+  <meta http-equiv='X-UA-Compatible' content='ie=edge'>
   <title>Codenames</title>
 
 
 
-  <link rel="stylesheet" href="styles/main.css">
+  <link rel='stylesheet' href='styles/main.css'>
 
-  <script src="/socket.io/socket.io.js"></script>
+  <script src='/socket.io/socket.io.js'></script>
   <script>
     let socket = io();
   </script>
@@ -18,72 +18,77 @@
 
 
 <body>
-  <div class="game-setup-container">
+  <div class='game-setup-container'>
     <h1>Welcome to Codenames!</h1>
-    <span>Find a game:</span>
-    <input type="text" placeholder="game name" class="game-name-textbox" list="games-list">
-    <datalist id="games-list"></datalist>
+    <label for='game-name-checkbox'>Game Name:</label>
+    <input type='text' placeholder='Find a game...' class='game-name-textbox' id='game-name-checkbox' list='games-list'>
+    <datalist id='games-list'></datalist>
     <br>
-    <div class="join-game-setup">
+    <div class='join-game-setup'>
       <h3>Game found</h3>
 
-      <label for="nickname-input">Nickname</label>
-      <input type="text" id="nickname-input">
-      <span></span>
+      <label for='nickname-input'>Nickname</label>
+      <input type='text' id='nickname-input'>
+      <!-- <span></span> -->
 
       <h5>Choose your team</h5>
-      <input type="radio" class="team-selector" name="team" id="blue-team-radio" value="blue" checked>
-      <label for="blue-team-radio">Blue</label>
+      <input type='radio' class='team-selector' name='team' id='blue-team-radio' value='blue' checked>
+      <label for='blue-team-radio'>Blue</label>
       <br>
-      <input type="radio" class="team-selector" name="team" id="red-team-radio" value="red">
-      <label for="red-team-radio">Red</label>
+      <input type='radio' class='team-selector' name='team' id='red-team-radio' value='red'>
+      <label for='red-team-radio'>Red</label>
       <br>
 
       <h5>Choose your role</h5>
-      <input type="radio" class="role-selector" name="role" id="role-detective-radio" value="detective" checked>
-      <label for="role-detective-radio">Detective</label>
+      <input type='radio' class='role-selector' name='role' id='role-detective-radio' value='detective' checked>
+      <label for='role-detective-radio'>Detective</label>
       <br>
-      <input type="radio" class="role-selector" name="role" id="role-spymaster-radio" value="spymaster">
-      <label for="role-spymaster-radio">Spymaster</label>
+      <input type='radio' class='role-selector' name='role' id='role-spymaster-radio' value='spymaster'>
+      <label for='role-spymaster-radio'>Spymaster</label>
     </div>
-    <button class="create-game-btn">
+    <button class='create-game-btn'>
       <span>Create Game</span>
     </button>
   </div>
 
-  <div class="game-board"></div>
+  <div class='game-board'></div>
 
-  <div class="chat-box">
-    <div class="chat-messages"></div>
-    <form class="chat-form">
-      <input type="text" name="message-box" class="message-box" autocomplete="off">
-      <button type="submit" class="chat-send-btn"></button>
+  <div class='chat-box'>
+    <div class='chat-messages'></div>
+    <form class='chat-form'>
+      <input type='text' name='message-box' class='message-box' autocomplete='off'>
+      <button type='submit' class='chat-send-btn'></button>
     </form>
   </div>
 
-  <div class="game-status">
-    <ul class="remaining-cards status-card">
+  <div class='game-status'>
+    <ul class='remaining-cards status-card'>
       <h3>Game Info:</h3>
-      <li class="blue-text">Blue cards remaining:
-        <span class="blue-cards-remaining"></span>
+      <div class='turn-display'>
+        It is
+        <span class='turn-view blue-bg'>Blue</span> team's turn
+      </div>
+      <li class='blue-text'>Blue cards remaining:
+        <span class='blue-cards-remaining'></span>
       </li>
-      <li class="red-text">Red cards remaining:
-        <span class="red-cards-remaining"></span>
+      <li class='red-text'>Red cards remaining:
+        <span class='red-cards-remaining'></span>
       </li>
+      <div class=end-turn-btn>End Turn</div>
     </ul>
-    <ul class="blue-player-list status-card">
+    <ul class='blue-player-list status-card'>
       <h3>Blue Players:</h3>
     </ul>
-    <ul class="red-player-list status-card">
+    <ul class='red-player-list status-card'>
       <h3>Red Players:</h3>
     </ul>
   </div>
 
-  <script src="js/lib.js"></script>
-  <script src="js/menu.js"></script>
-  <script src="js/chat.js"></script>
-  <script src="js/status.js"></script>
-  <script src="js/game.js"></script>
+  <script src='js/lib.js'></script>
+  <script src='js/menu.js'></script>
+  <script src='js/chat.js'></script>
+  <script src='js/status.js'></script>
+  <script src='js/game.js'></script>
 </body>
 
 </html>

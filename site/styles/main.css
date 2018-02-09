@@ -7,6 +7,94 @@ body {
 
 /*
 
+
+Global Styles
+
+
+*/
+
+button {
+  border: 2px solid #40cf8c;
+  border-radius: 15px;
+  height: 25px;
+  outline: none;
+  transition-duration: 0.2s;
+}
+
+button:disabled {
+  border-color: #aaaaaa;
+}
+
+button:active {
+  transform: scale(0.95);
+  background-color: #40cf8c;
+}
+
+button:focus {
+  border-color: #aaa;
+}
+
+input[type='text']:focus {
+  border-color: #aaa;
+}
+
+input[type='text'] {
+  height: 25px;
+  margin: 5px;
+  border: 2px solid #40cf8c;
+  border-radius: 15px;
+  padding: 5px;
+  background-color: #fff;
+  outline: none;
+}
+
+input[type='radio'] {
+  outline: none;
+}
+
+input[type='radio']:focus::after {
+  border-color: #aaa;
+}
+
+input[type='radio']::before {
+  content: '';
+  display: block;
+  width: 15px;
+  height: 15px;
+  background-color: #fff;
+  left: -1px;
+  top: -1px;
+  position: relative;
+}
+
+input[type='radio']::after {
+  content: '';
+  position: relative;
+  display: block;
+  border: 2px solid #40cf8c;
+  left: -1px;
+  top: -17px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0px 6px #fff;
+  backgriund-color: #40cf8c;
+  transition-duration: 0.2s;
+}
+
+input[type='radio']:checked::after {
+  background-color: #40cf8c;
+  box-shadow: inset 0 0 0px 2px #fff;
+}
+
+input[type='radio']:disabled::after {
+  border-color: #fff;
+  background-color: #ca3a3a;
+  box-shadow: none;
+}
+
+/*
+
 Game Setup stuff
 
 */
@@ -14,6 +102,7 @@ Game Setup stuff
 .game-setup-container {
   text-align: center;
   transition-duration: 0.3s;
+  margin: 0 0 0 250px;
 }
 
 .join-game-setup {
@@ -27,10 +116,10 @@ label {
   position: relative;
 }
 
-label::after {
+/* .join-game-setup > label::after {
   content: attr(data-sub);
   padding-left: 15px;
-}
+} */
 
 input + span::after {
   content: attr(data-sub);
@@ -77,13 +166,17 @@ Game Board stuff
   transition-duration: 0.3s;
 }
 
-.card:hover {
+.card:not(.disabled):hover {
   box-shadow: 3px 3px 5px rgba(100, 100, 100, 0.5),
     -3px 3px 5px rgba(100, 100, 100, 0.5);
   transform: scale(1.05);
 }
 
 .card[class*='team'] {
+  cursor: default;
+}
+
+.card.disabled {
   cursor: default;
 }
 
@@ -137,20 +230,14 @@ Chat box stuff
   padding-bottom: 40px;
 }
 
-.message-box {
+input[type='text'].message-box {
   position: absolute;
   right: 0;
   bottom: 0;
   left: 0;
   width: calc(100% - 10px);
-  height: 30px;
-  margin: 5px;
-  border: 2px solid #aaaaaa;
-  border-radius: 15px;
-  padding: 5px;
   padding-right: 27.5px;
-  background-color: #fff;
-  outline: none;
+  height: 30px;
 }
 
 .chat-send-btn {
@@ -179,6 +266,7 @@ Chat box stuff
   right: 5px;
   left: 5px;
   bottom: 50px;
+  padding-top: 5px;
 }
 
 .chat-message {
@@ -237,6 +325,13 @@ Game Status
   list-style-position: inside;
 }
 
+.status-card > li.player-name:after {
+  content: '(you)';
+  margin-left: 5px;
+  font-size: 0.5em;
+  vertical-align: middle;
+}
+
 li.spymaster:after {
   content: '';
   position: absolute;
@@ -261,6 +356,9 @@ li {
 }
 
 .status-card {
+  display: flex;
+  flex-direction: column;
+  position: relative;
   background-color: #ddd;
   border-radius: 15px;
   margin: 10px 5px;
@@ -283,4 +381,53 @@ li {
 
 .red-player-list {
   color: #ca3a3a;
+}
+
+.turn-view {
+  border-radius: 5px;
+  color: #fff;
+  padding: 2px 5px;
+}
+
+.turn-display {
+  margin: 5px 0;
+}
+
+.blue-bg {
+  background-color: #3a48ca;
+}
+
+.red-bg {
+  background-color: #ca3a3a;
+}
+
+.end-turn-btn {
+  position: absolute;
+  right: 10px;
+  /* top: 10px; */
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 2px;
+  bottom: 10px;
+  left: 10px;
+  background-color: #ccc;
+  border-radius: 10px;
+  padding: 10px;
+  vertical-align: middle;
+  cursor: default;
+  box-shadow: none;
+  transition-duration: 0.3s;
+}
+
+.end-turn-btn.enabled {
+  background-color: #ece7a2;
+  cursor: pointer;
+  box-shadow: 2px 2px 1px rgba(100, 100, 100, 0.5),
+    -2px 2px 1px rgba(100, 100, 100, 0.5);
+}
+
+.end-turn-btn.enabled:hover {
+  cursor: pointer;
+  box-shadow: 4px 4px 5px rgba(100, 100, 100, 0.5),
+    -4px 4px 5px rgba(100, 100, 100, 0.5);
 }

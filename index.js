@@ -1,6 +1,11 @@
 /*
 TODO:
+[ ] Remove the extra game names from the datalist OR
+[ ] Overhaul game selection
+[ ] Bolden the players name, and indicate what team they are on
+[X] Abort card guess if it is not that team's turn
 [ ] check player socket id before joining game
+[ ] Maybe save the socket id using the web storage API, then, use that for reconnecting
 [ ] Clean up everything, and reorder it
 */
 
@@ -76,14 +81,25 @@ io.on('connection', function(socket) {
   });
 
   socket.on('card guess', (currentGame, guess) => {
-    console.log(`Looking for card ${guess}`);
-    console.log(currentGame);
     let game = findGame(currentGame);
+    let guessTeam = game.players.find((player) => {
+      return player.socket === socket.id;
+    }).team;
+    if (guessTeam !== game.turn) {
+      console.log(`player acted out of turn`);
+      return;
+    }
+    console.log(`Looking for card ${guess}`);
+
     console.log(game);
     for (let i = 0; i < game.board.length; i++) {
       if (game.board[i].word.toLowerCase() === guess.toLowerCase()) {
         game.board[i].revealed = true;
         game.teams[game.board[i].team].cardsRemaining--;
+
+        if (game.board[i].team !== guessTeam) {
+          game.endTurn(guessTeam);
+        }
         break;
       }
     }
@@ -113,6 +129,14 @@ io.on('connection', function(socket) {
     } else {
       socket.emit('game update', findGame(room).makeClientCopy());
     }
+  });
+
+  socket.on('end turn', (team, game) => {
+    findGame(game).endTurn(team);
+  });
+
+  socket.on('emit request', (params) => {
+    socket.broadcast.emit(...params);
   });
 });
 
@@ -161,12 +185,14 @@ class Game {
    */
   generateBoard() {
     // Choose which team goes first
-    if (Math.random >= 0.5) {
+    if (Math.random() >= 0.5) {
       this.teams['blue'].cards++;
       this.teams['blue'].isFirst = true;
+      this.turn = 'blue';
     } else {
       this.teams['red'].cards++;
       this.teams['red'].isFirst = true;
+      this.turn = 'red';
     }
 
     this.teams.blue.cardsRemaining = this.teams.blue.cards;
@@ -259,9 +285,29 @@ class Game {
       });
       io.sockets.connected[req.socketId].join(this.id);
       this.updateClients();
+      this.turnUpdate(req.socketId);
     }
 
     return error;
+  }
+
+  /**
+   * End a teams turn
+   * @param {String} team - The team who's turn should be over
+   */
+  endTurn(team) {
+    let newTurn;
+    if (team.toLowerCase() === 'blue') {
+      newTurn = 'red';
+    } else if (team.toLowerCase() === 'red') {
+      newTurn = 'blue';
+    } else {
+      console.log('UH OH!!! Invalid turn end request recieved: ' + team);
+    }
+
+    this.turn = newTurn;
+
+    this.turnUpdate();
   }
 
   /**
@@ -320,6 +366,20 @@ class Game {
       } else {
         io.to(player.socket).emit('game update', this.makeClientCopy());
       }
+    }
+  }
+
+  /**
+   * Send a turn update to all the players
+   * @param {Socket} socket - Socket of the client to update
+   */
+  turnUpdate(socket) {
+    if (!socket) {
+      for (let player of this.players) {
+        io.to(player.socket).emit('turn update', this.turn, this.id);
+      }
+    } else {
+      io.to(socket).emit('turn update', this.turn, this.id);
     }
   }
 }
@@ -381,11 +441,7 @@ function shuffle(a) {
  */
 function findGame(id) {
   let result;
-  games.forEach((game) => {
-    if (game.id == id.toLowerCase()) {
-      result = game;
-      return;
-    }
+  return games.find((game) => {
+    return game.id == id.toLowerCase();
   });
-  return result;
 }

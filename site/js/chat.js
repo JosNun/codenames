@@ -8,6 +8,7 @@ socket.on('chat message', addChatMessage);
 /**
  * Send a chat message
  * @param {Event} e  - event object
+ * @return {boolean}
  */
 function sendChat(e) {
   console.log('sending chat');

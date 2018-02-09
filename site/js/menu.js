@@ -1,7 +1,7 @@
 /*
 TODO:
 [X] for finding games, show a list of games that already  (input list attribute)
-[ ] Display the current teams, and who is on them
+[X] Display the current teams, and who is on them
 [ ] Clean up everything, and reorder it
 */
 
@@ -15,6 +15,7 @@ let gameQuery = debounce((e) => {
 }, 250);
 
 addListenerAsync(gameQuery, gameNameBox, 'input');
+addListenerAsync(updateGamesList, gameNameBox, 'focus');
 addListenerAsync(
   () => {
     let gameName = gameNameBox.value;
@@ -96,8 +97,8 @@ socket.on('game update', (game) => {
 function updateGamesList(games) {
   socket.emit('games list request', (games) => {
     let gamesList = document.getElementById('games-list');
-    while (gamesList.Child) {
-      gamesList.removeChild(gamesList.Child);
+    while (gamesList.firstChild) {
+      gamesList.removeChild(gamesList.firstChild);
     }
 
     games.forEach((game) => {
@@ -194,11 +195,11 @@ let gameLogin = {
 
     if (gameHasPlayer(playerName)) {
       this.nameBox.classList.add('invalid');
-      this.nameBoxSpan.setAttribute('data-sub', 'Name already taken!');
+      // this.nameBoxSpan.setAttribute('data-sub', 'Name already taken!');
       createGameBtn.setAttribute('disabled', '');
     } else {
       this.nameBox.classList.remove('invalid');
-      this.nameBoxSpan.setAttribute('data-sub', '');
+      // this.nameBoxSpan.setAttribute('data-sub', '');
       createGameBtn.removeAttribute('disabled');
     }
 

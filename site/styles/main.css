@@ -2,7 +2,10 @@ html,
 body {
   margin: 0;
   padding: 0;
+  width: 80vw;
   font-family: sans-serif;
+  /* background-image: var(--main-bg); */
+  background-color: #d6caa9;
 }
 
 /*
@@ -14,7 +17,7 @@ Global Styles
 */
 
 button {
-  border: 2px solid #40cf8c;
+  border: 2px solid #48a9a6;
   border-radius: 15px;
   height: 25px;
   outline: none;
@@ -27,7 +30,7 @@ button:disabled {
 
 button:active {
   transform: scale(0.95);
-  background-color: #40cf8c;
+  background-color: #48a9a6;
 }
 
 button:focus {
@@ -41,7 +44,7 @@ input[type='text']:focus {
 input[type='text'] {
   height: 25px;
   margin: 5px;
-  border: 2px solid #40cf8c;
+  border: 2px solid #48a9a6;
   border-radius: 15px;
   padding: 5px;
   background-color: #fff;
@@ -61,7 +64,7 @@ input[type='radio']::before {
   display: block;
   width: 15px;
   height: 15px;
-  background-color: #fff;
+  background-color: #e4dfda;
   left: -1px;
   top: -1px;
   position: relative;
@@ -71,25 +74,25 @@ input[type='radio']::after {
   content: '';
   position: relative;
   display: block;
-  border: 2px solid #40cf8c;
-  left: -1px;
+  border: 2px solid #48a9a6;
+  left: -2px;
   top: -17px;
   width: 12px;
   height: 12px;
   border-radius: 50%;
   box-shadow: inset 0 0 0px 6px #fff;
-  backgriund-color: #40cf8c;
+  background-color: #48a9a6;
   transition-duration: 0.2s;
 }
 
 input[type='radio']:checked::after {
-  background-color: #40cf8c;
+  background-color: #48a9a6;
   box-shadow: inset 0 0 0px 2px #fff;
 }
 
 input[type='radio']:disabled::after {
   border-color: #fff;
-  background-color: #ca3a3a;
+  background-color: #c1666b;
   box-shadow: none;
 }
 
@@ -140,14 +143,13 @@ Game Board stuff
 .game-board {
   display: none;
   position: absolute;
-  top: 0;
-  right: 0;
-  left: 250px;
-  padding: 15px;
+  top: 15px;
+  right: 15px;
+  left: 265px;
   height: calc(100% * 2 / 3);
-  grid-template-columns: repeat(5, 18%);
-  grid-template-rows: repeat(5, 18%);
-  grid-gap: 20px;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  grid-gap: 15px;
 }
 
 .card {
@@ -155,10 +157,10 @@ Game Board stuff
   position: relative;
   align-items: center;
   justify-content: center;
-  background-color: #ece7a2;
-  color: #fff;
+  background-color: #e4dfda;
+  color: #424242;
   font-family: sans-serif;
-  font-size: 100%;
+  font-size: calc((100vw - 280px) * 0.02);
   font-weight: 600;
   border-radius: 10px;
   box-sizing: border-box;
@@ -181,11 +183,11 @@ Game Board stuff
 }
 
 .card.team-red {
-  color: #ca3a3a;
+  color: #c1666b;
 }
 
 .card.team-blue {
-  color: #3a48ca;
+  color: #4357ad;
 }
 
 .card.team-neutral {
@@ -197,11 +199,11 @@ Game Board stuff
 }
 
 .card.revealed-red {
-  border: 5px solid #ca3a3a;
+  border: 5px solid #c1666b;
 }
 
 .card.revealed-blue {
-  border: 5px solid #3a48ca;
+  border: 5px solid #4357ad;
 }
 
 .card.revealed-neutral {
@@ -225,7 +227,7 @@ Chat box stuff
   bottom: 15px;
   top: 15px;
   border-radius: 0 15px 15px 0;
-  background-color: #eeeeee;
+  background-color: #919098;
   padding: 10px;
   padding-bottom: 40px;
 }
@@ -283,7 +285,7 @@ input[type='text'].message-box {
 
 .chat-local {
   align-self: flex-end;
-  background-color: #40cf8c;
+  background-color: #48a9a6;
 }
 
 .chat-author {
@@ -295,11 +297,11 @@ input[type='text'].message-box {
 }
 
 .blue-text {
-  color: #3a48ca;
+  color: #4357ad;
 }
 
 .red-text {
-  color: #ca3a3a;
+  color: #c1666b;
 }
 
 /*
@@ -316,7 +318,7 @@ Game Status
   height: calc(100% * 1 / 3 - 70px);
   left: 275px;
   border-radius: 15px 0 0 15px;
-  background-color: #eee;
+  background-color: #919098;
   transition-duration: 0.3s;
   transform: translateX(100%);
 }
@@ -376,11 +378,11 @@ li {
 }
 
 .blue-player-list {
-  color: #3a48ca;
+  color: #4357ad;
 }
 
 .red-player-list {
-  color: #ca3a3a;
+  color: #c1666b;
 }
 
 .turn-view {
@@ -394,11 +396,11 @@ li {
 }
 
 .blue-bg {
-  background-color: #3a48ca;
+  background-color: #4357ad;
 }
 
 .red-bg {
-  background-color: #ca3a3a;
+  background-color: #c1666b;
 }
 
 .end-turn-btn {
@@ -420,7 +422,7 @@ li {
 }
 
 .end-turn-btn.enabled {
-  background-color: #ece7a2;
+  background-color: #e4dfda;
   cursor: pointer;
   box-shadow: 2px 2px 1px rgba(100, 100, 100, 0.5),
     -2px 2px 1px rgba(100, 100, 100, 0.5);

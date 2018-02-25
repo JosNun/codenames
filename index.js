@@ -1,16 +1,17 @@
 /*
 TODO:
-[X] Remove the extra game names from the datalist OR
+[x] Remove the extra game names from the datalist OR
 [ ] Overhaul game selection
-[ ] Bolden the players name, and indicate what team they are on
-[X] Abort card guess if it is not that team's turn
+[x] Bolden the players name, and indicate what team they are on
+[x] Abort card guess if it is not that team's turn
 [ ] check player socket id before joining game
 [ ] Maybe save the socket id using the web storage API, then,
 use that for reconnecting
 [ ] Allow a way to set a player's name in the menu
 [ ] Show game info in setup screen
 [ ] Mobilify it
-[ ] Clean up everything, and reorder it
+[ ] Clean up everything, and reorder it, and break it into modules
+[ ] use winston for logging
 */
 
 let express = require('express');

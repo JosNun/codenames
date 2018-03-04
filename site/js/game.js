@@ -16,7 +16,7 @@ function init() {
   let gameBoard = document.querySelector('.game-board');
   gameBoard.style.display = 'grid';
 
-  document.querySelector('.game-status').style.transform = 'translateX(0)';
+  document.querySelector('.game-status').classList.add('show-desktop');
 
   currentGame.board.forEach((card) => {
     let div = document.createElement('div');

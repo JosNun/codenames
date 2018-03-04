@@ -1,4 +1,4 @@
-@media (min-width: 616px) {
+@media (min-width: 768px) {
   /*
 
 
@@ -7,7 +7,50 @@
 
   */
 
-  .hide-desktop {
+  .hide-on-desktop {
     display: none;
+  }
+
+  /*
+  
+  
+  Global Styles
+  
+  
+  */
+
+  /*
+  
+  
+  Game Board
+  
+  
+  */
+  .card {
+    font-size: calc((100vw - 280px) * 0.015);
+  }
+
+  .card:not(.disabled):hover {
+    box-shadow: 3px 3px 5px rgba(100, 100, 100, 0.5),
+      -3px 3px 5px rgba(100, 100, 100, 0.5);
+    transform: scale(1.05);
+  }
+
+  /*
+  
+  
+  Game Status
+  
+  
+  */
+
+  .game-status.show-desktop {
+    transform: translateX(0);
+  }
+
+  .end-turn-btn.enabled:hover {
+    cursor: pointer;
+    box-shadow: 4px 4px 5px rgba(100, 100, 100, 0.5),
+      -4px 4px 5px rgba(100, 100, 100, 0.5);
   }
 }

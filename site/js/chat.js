@@ -1,9 +1,15 @@
+let chatContainer = document.querySelector('.chat-box');
 let chatbox = document.querySelector('.message-box');
 let chatForm = document.querySelector('.chat-form');
 let chatSendBtn = document.querySelector('.chat-send-btn');
 let chatList = document.querySelector('.chat-messages');
 
-socket.on('chat message', addChatMessage);
+socket.on('chat message', (payload, isLocal) => {
+  if (!isLocal && !chatContainer.classList.contains('show')) {
+    showChatIndicator('show');
+  }
+  addChatMessage(payload, isLocal);
+});
 
 /**
  * Send a chat message
@@ -52,9 +58,9 @@ function addChatMessage(payload, isLocal) {
       author.innerText = payload.name;
       author.classList.add('chat-author');
       if (payload.team === 'blue') {
-        author.classList.add('blue-text');
+        author.classList.add('blue');
       } else if (payload.team === 'red') {
-        author.classList.add('red-text');
+        author.classList.add('red');
       }
 
       div.appendChild(author);
@@ -64,6 +70,16 @@ function addChatMessage(payload, isLocal) {
 
     chatList.scrollTop = chatList.scrollHeight;
   }
+}
+
+function showChatIndicator() {
+  let indicator = document.querySelector('.chat-indicator');
+  indicator.classList.remove('hidden');
+}
+
+function hideChatIndicator() {
+  let indicator = document.querySelector('.chat-indicator');
+  indicator.classList.add('hidden');
 }
 
 chatbox.addEventListener(

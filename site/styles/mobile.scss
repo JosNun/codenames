@@ -1,5 +1,128 @@
-@media (max-width: 615px) {
-  body {
-    background-color: #f00 !important;
+$bg-color: #d6caa9;
+$bg-alt-color: #919098;
+$team-color-blue: #4357ad;
+$team-color-red: #c1666b;
+$accent-color: #48a9a6;
+
+@media (max-width: 768px) {
+  .game-setup-container {
+    margin: 0;
+  }
+
+  .game-board {
+    left: calc(10% + 35px);
+    bottom: 15px;
+    height: auto;
+
+    .card {
+      font-size: calc((90vw) * 0.02);
+    }
+  }
+
+  .panel {
+    border-radius: 0 15px 15px 0;
+    left: 0;
+    top: 15px;
+    width: 80%;
+    height: calc(100% - 30px);
+    transition-duration: 0.3s;
+  }
+
+  .panel.show {
+    transform: translateX(0);
+  }
+
+  .chat-box {
+    transform: translateX(-100%);
+  }
+
+  .game-status {
+    left: 0;
+    flex-direction: column;
+    transform: translateX(-100%);
+  }
+
+  .view-toggles {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    left: 0;
+    top: 50%;
+    transform-origin: 0 50%;
+    transform: translate(0, -50%) scaleX(1);
+    transition-duration: 0.3s;
+    overflow: visible;
+    z-index: 1;
+
+    &.slid {
+      transform: translate(80vw, -50%) scaleX(0);
+      z-index: 0;
+    }
+  }
+
+  .toggle-close {
+    position: fixed;
+    left: 0;
+    top: 50%;
+    transform: translate(0, -50%) scaleX(0);
+    transition-duration: 0.3s;
+    z-index: 1;
+    box-sizing: border-box;
+    padding: 15px;
+    background-color: $accent-color;
+    border: 4px solid #fff;
+    border-radius: 0 15px 15px 0;
+    border-width: 4px 4px 4px 0;
+    font-size: 150%;
+    text-align: center;
+    color: #fff;
+    transform-origin: 0 50%;
+    transition-duration: 0.3s;
+    overflow: hidden;
+    z-index: 0;
+
+    &.slid {
+      transform: translate(80vw, -50%) scaleX(1);
+      z-index: 1;
+    }
+  }
+
+  .view-toggle {
+    box-sizing: border-box;
+    padding: 15px;
+    height: 10%;
+    background-color: $accent-color;
+    border: solid #fff;
+    border-width: 4 4px 4px 0;
+    font-size: 150%;
+    text-align: center;
+    color: #fff;
+    transition-duration: 0.3s;
+
+    & .chat-indicator {
+      position: absolute;
+      top: 0;
+      right: 0;
+      transform: translate(25%, -25%);
+      width: 20px;
+      height: 20px;
+      background-color: $bg-alt-color;
+      border-radius: 50%;
+      transition-duration: 0.3s;
+    }
+  }
+
+  .view-toggle:first-child {
+    border-radius: 0 15px 0 0;
+    border-width: 4px 4px 1px 0;
+  }
+
+  .view-toggle:not(:first-child):not(:last-child) {
+    border-width: 1px 4px 1px 0;
+  }
+
+  .view-toggle:last-child {
+    border-radius: 0 0 15px 0;
+    border-width: 1px 4px 4px 0;
   }
 }

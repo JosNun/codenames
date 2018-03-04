@@ -6,18 +6,33 @@
   <meta http-equiv='X-UA-Compatible' content='ie=edge'>
   <title>Codenames</title>
 
-
-
   <link rel='stylesheet' href='css/main.css'>
 
+
+  <script defer src="./assets/fontawesome-all.js"></script>
   <script src='/socket.io/socket.io.js'></script>
   <script>
     let socket = io();
   </script>
 </head>
 
-
 <body>
+
+  <div class="toggle-close hide-on-desktop">
+    <i class="fas fa-chevron-left"></i>
+  </div>
+  <div class="view-toggles hide-on-desktop">
+    <div data-target='.chat-box' class="toggle-chat view-toggle">
+      <div class="chat-indicator hidden"></div>
+      <i class="fas fa-comments"></i>
+    </div>
+    <div data-target='.game-status' class="toggle-stats view-toggle">
+      <i class="fas fa-clipboard-list"></i>
+    </div>
+    <!-- <div class="toggle-players view-toggle">
+      <i class="fas fa-users"></i>
+    </div> -->
+  </div>
   <div class='game-setup-container'>
     <h1>Welcome to Codenames!</h1>
     <label for='game-name-checkbox'>Game Name:</label>
@@ -53,16 +68,17 @@
 
   <div class='game-board'></div>
 
-  <div class="chat-toggle hide-desktop"></div>
-  <div class='chat-box'>
+  <div class='chat-box panel'>
     <div class='chat-messages'></div>
     <form class='chat-form'>
       <input type='text' name='message-box' class='message-box' autocomplete='off'>
-      <button type='submit' class='chat-send-btn'></button>
+      <button type='submit' class='chat-send-btn'>
+        <i class="fas fa-arrow-alt-circle-right"></i>
+      </button>
     </form>
   </div>
 
-  <div class='game-status'>
+  <div class='game-status panel'>
     <ul class='remaining-cards status-card'>
       <h3>Game Info:</h3>
       <div class='turn-display'>
@@ -89,6 +105,7 @@
   <script src='js/menu.js'></script>
   <script src='js/chat.js'></script>
   <script src='js/status.js'></script>
+  <script src="js/ui.js"></script>
   <script src='js/game.js'></script>
 </body>
 

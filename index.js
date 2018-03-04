@@ -78,7 +78,6 @@ io.on('connection', function(socket) {
 
   socket.on('send final game', () => {
     console.log('Sending final game');
-    console.log(games);
 
     games.forEach((game) => {
       io.to(game.id).emit('game update', game);
@@ -96,7 +95,6 @@ io.on('connection', function(socket) {
     }
     console.log(`Looking for card ${guess}`);
 
-    console.log(game);
     for (let i = 0; i < game.board.length; i++) {
       if (game.board[i].word.toLowerCase() === guess.toLowerCase()) {
         game.board[i].revealed = true;
@@ -112,7 +110,7 @@ io.on('connection', function(socket) {
   });
 
   socket.on('chat message', (payload) => {
-    console.log('message recieved');
+    console.log('Chat message recieved');
     if (payload.room === 'global') {
       socket.broadcast.emit('chat message', payload);
     } else {
@@ -228,7 +226,6 @@ class Game {
       this.usedWords.push(word);
 
       let card = new Card(word, team);
-      console.log(JSON.stringify(card, null, 2));
       this.board.push(card);
     }
 
@@ -238,7 +235,6 @@ class Game {
     });
 
     this.board = shuffle(this.board);
-    console.log(this.board);
   }
 
   /**

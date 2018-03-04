@@ -61,15 +61,15 @@ button:disabled {
 
 button:active {
   transform: scale(0.95);
-  background-color: $accent-color;
+  background-color: $bg-alt-color;
 }
 
 button:focus {
-  border-color: $accent-color;
+  border-color: $bg-alt-color;
 }
 
 input[type='text']:focus {
-  border-color: $accent-color;
+  border-color: $bg-alt-color;
 }
 
 input[type='text'] {
@@ -87,7 +87,7 @@ input[type='radio'] {
 }
 
 input[type='radio']:focus::after {
-  border-color: $accent-color;
+  border-color: $bg-alt-color;
 }
 
 input[type='radio']::before {

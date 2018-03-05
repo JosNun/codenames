@@ -1,14 +1,16 @@
 {
   "name": "codenames",
   "version": "1.0.0",
-  "description": "",
+  "description":
+    "Codenames... but digital! Play your favorite game on any device!",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "develop": "nodemon --inspect -w index.js"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Josiah Nunemaker",
+  "license": "MIT",
   "dependencies": {
     "express": "^4.16.2",
     "socket.io": "^2.0.4"

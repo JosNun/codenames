@@ -49,7 +49,7 @@ Global Styles
 button {
   border: 2px solid $accent-color;
   background-color: #fff;
-  border-radius: 15px;
+  border-radius: 5px;
   height: 25px;
   outline: none;
   transition-duration: 0.2s;
@@ -76,7 +76,7 @@ input[type='text'] {
   height: 25px;
   margin: 5px;
   border: 2px solid $accent-color;
-  border-radius: 15px;
+  border-radius: 5px;
   padding: 5px;
   background-color: #fff;
   outline: none;
@@ -262,6 +262,7 @@ Chat box stuff
   background-color: $bg-alt-color;
   padding: 10px;
   padding-bottom: 40px;
+  overflow: hidden;
 }
 
 input[type='text'].message-box {
@@ -293,7 +294,8 @@ input[type='text'].message-box {
 .chat-messages {
   display: flex;
   flex-direction: column;
-  overflow: scroll;
+  overflow-x: hidden;
+  overflow-y: scroll;
   position: absolute;
   top: 5px;
   right: 5px;

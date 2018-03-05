@@ -9,7 +9,7 @@ TODO:
 use that for reconnecting
 [ ] Allow a way to set a player's name in the menu
 [ ] Show game info in setup screen
-[ ] Mobilify it
+[x] Mobilify it
 [ ] Clean up everything, and reorder it, and break it into modules
 [ ] use winston for logging
 */

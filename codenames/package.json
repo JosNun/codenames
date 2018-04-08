@@ -1,0 +1,11 @@
+{
+  "name": "codenames",
+  "version": "1.0.0",
+  "description": "codenames board game in js",
+  "main": "codenames.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT"
+}

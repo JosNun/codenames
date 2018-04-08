@@ -1,42 +1,43 @@
 /*
 TODO:
 [x] Remove the extra game names from the datalist OR
-[ ] Overhaul game selection
+[x] Mobilify it
 [x] Bolden the players name, and indicate what team they are on
 [x] Abort card guess if it is not that team's turn
+[ ] Overhaul game selection
 [ ] check player socket id before joining game
 [ ] Maybe save the socket id using the web storage API, then,
 use that for reconnecting
 [ ] Allow a way to set a player's name in the menu
 [ ] Show game info in setup screen
-[x] Mobilify it
 [ ] Clean up everything, and reorder it, and break it into modules
 [ ] use winston for logging
+[ ] gulp + nodemon for build tools
+[ ] history.push/pop state for different rooms
+[ ] webRTC real-time audio
+[ ] gzip the HTML, CSS, and client JS
+[ ] Promisify all the things (also provides error handling) https://expressjs.com/en/advanced/best-practice-performance.html#handle-exceptions-properly
 */
 
-let express = require('express');
-let app = express();
-let http = require('http').Server(app);
-let io = require('socket.io')(http);
-let fs = require('fs');
+const express = require('express');
+
+const app = express();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
+const codenames = require('./codenames');
+
+codenames.setIo(io);
 
 app.use(express.static('site'));
 
-let wordList;
-let games = [];
-global.game;
+console.log(codenames);
+codenames.loadWordList();
 
-loadWordList();
-
-io.on('connection', function(socket) {
+io.on('connection', socket => {
   console.log('a user connected');
 
-  socket.on('game list request', (id) => {
-    socket.emit('game list', games);
-  });
-
   socket.on('game query', (id, msg) => {
-    let game = findGame(msg);
+    const game = codenames.findGame(msg);
     if (typeof game === 'object') {
       socket.emit('game query response', game.makeClientCopy());
     } else {
@@ -44,32 +45,34 @@ io.on('connection', function(socket) {
     }
   });
 
-  socket.on('create game', (msg) => {
-    console.log('creating game... ' + msg);
-    new Game(msg);
+  socket.on('create game', name => {
+    console.log(`creating game... ${name}`);
+    codenames.createGame(name);
   });
 
-  socket.on('join game', (req) => {
+  socket.on('join game', req => {
     console.log(
-      'join game request recieved for ' + req.gameId + ' from ' + req.socketId
+      `join game request recieved for ${req.gameId} from ${req.socketId}`
     );
-    let gameId = req.gameId;
+    const { gameId } = req;
 
-    let playerReq = req;
+    const playerReq = req;
     delete playerReq.gameId;
 
-    let playerAdded = findGame(gameId).addPlayer(playerReq);
+    const playerAdded = codenames
+      .findGame(gameId)
+      .addPlayer(playerReq, io.sockets);
 
     socket.emit('game join response', !playerAdded, playerAdded);
   });
 
-  socket.on('games list request', (callback) => {
+  socket.on('games list request', callback => {
     console.log('Games list request recieved');
 
-    let gameNames = [];
+    const gameNames = [];
 
-    games.forEach((game, i) => {
-      let name = game.id;
+    codenames.getGames().forEach(game => {
+      const name = game.id;
       gameNames.push(name);
     });
 
@@ -79,26 +82,25 @@ io.on('connection', function(socket) {
   socket.on('send final game', () => {
     console.log('Sending final game');
 
-    games.forEach((game) => {
+    codenames.getGames().forEach(game => {
       io.to(game.id).emit('game update', game);
     });
   });
 
   socket.on('card guess', (currentGame, guess) => {
-    let game = findGame(currentGame);
-    let guessTeam = game.players.find((player) => {
-      return player.socket === socket.id;
-    }).team;
+    const game = codenames.findGame(currentGame);
+    if (typeof game === 'undefined') return console.log('Game not found');
+    const guessTeam = game.players.find(player => player.socket === socket.id)
+      .team;
     if (guessTeam !== game.turn) {
-      console.log(`player acted out of turn`);
-      return;
+      return console.log(`player acted out of turn`);
     }
     console.log(`Looking for card ${guess}`);
 
-    for (let i = 0; i < game.board.length; i++) {
+    for (let i = 0; i < game.board.length; i += 1) {
       if (game.board[i].word.toLowerCase() === guess.toLowerCase()) {
         game.board[i].revealed = true;
-        game.teams[game.board[i].team].cardsRemaining--;
+        game.teams[game.board[i].team].cardsRemaining -= 1;
 
         if (game.board[i].team !== guessTeam) {
           game.endTurn(guessTeam);
@@ -107,9 +109,10 @@ io.on('connection', function(socket) {
       }
     }
     game.updateClients();
+    return true;
   });
 
-  socket.on('chat message', (payload) => {
+  socket.on('chat message', payload => {
     console.log('Chat message recieved');
     if (payload.room === 'global') {
       socket.broadcast.emit('chat message', payload);
@@ -119,330 +122,26 @@ io.on('connection', function(socket) {
   });
 
   socket.on('request game update', (id, room) => {
-    let game = findGame(room);
-    let role;
-    for (let player of game.players) {
-      if (player.socket === id) {
-        role = player.role;
-      }
-    }
+    const game = codenames.findGame(room);
 
-    if (role === 'spymaster') {
-      socket.emit('game update', findGame(room).makeSpymasterCopy());
+    const playerRole = game.players.find(player => player.socket === id).role;
+
+    if (playerRole === 'spymaster') {
+      socket.emit('game update', codenames.findGame(room).makeSpymasterCopy());
     } else {
-      socket.emit('game update', findGame(room).makeClientCopy());
+      socket.emit('game update', codenames.findGame(room).makeClientCopy());
     }
   });
 
   socket.on('end turn', (team, game) => {
-    findGame(game).endTurn(team);
+    codenames.findGame(game).endTurn(team);
   });
 
-  socket.on('emit request', (params) => {
+  socket.on('emit request', params => {
     socket.broadcast.emit(...params);
   });
 });
 
-http.listen(3000, function() {
+http.listen(3000, () => {
   console.log('Listening on *:3000');
 });
-
-/**
- * a game room
- */
-class Game {
-  /**
-   * @param {String} id - the games unique id
-   */
-  constructor(id) {
-    this.id = id.toLowerCase();
-    this.players = [];
-    this.board = [];
-    this.usedWords = [];
-    this.teams = {
-      blue: {
-        color: 'blue',
-        cards: 8,
-      },
-      red: {
-        color: 'red',
-        cards: 8,
-      },
-      neutral: {
-        color: 'tan',
-        cards: 7,
-      },
-      assassin: {
-        color: 'black',
-        cards: 1,
-      },
-    };
-
-    this.generateBoard();
-    games.push(this);
-    global.game = this;
-  }
-
-  /**
-   * generate a new game board
-   */
-  generateBoard() {
-    // Choose which team goes first
-    if (Math.random() >= 0.5) {
-      this.teams['blue'].cards++;
-      this.teams['blue'].isFirst = true;
-      this.turn = 'blue';
-    } else {
-      this.teams['red'].cards++;
-      this.teams['red'].isFirst = true;
-      this.turn = 'red';
-    }
-
-    this.teams.blue.cardsRemaining = this.teams.blue.cards;
-    this.teams.red.cardsRemaining = this.teams.red.cards;
-
-    // Make the cards
-    for (let i = 0; i < 25; i++) {
-      let word = getRandomWord();
-      let team;
-      while (this.usedWords.includes(word)) {
-        // console.log(word + ' is in used words list');
-        word = getRandomWord();
-      }
-
-      if (this.teams.blue.cards > 0) {
-        this.teams.blue.cards--;
-        team = 'blue';
-      } else if (this.teams.red.cards > 0) {
-        this.teams.red.cards--;
-        team = 'red';
-      } else if (this.teams.assassin.cards > 0) {
-        this.teams.assassin.cards--;
-        team = 'assassin';
-      } else {
-        this.teams.neutral.cards--;
-        team = 'neutral';
-      }
-      this.usedWords.push(word);
-
-      let card = new Card(word, team);
-      this.board.push(card);
-    }
-
-    // delete total cards amount (useless now anyway)
-    Object.keys(this.teams).forEach((key) => {
-      delete this.teams[key].cards;
-    });
-
-    this.board = shuffle(this.board);
-  }
-
-  /**
-   * Add a player to the game
-   * @param {string} req - the request object
-   * @return {String} an error if there is one, otherwise an empty string
-   */
-  addPlayer(req) {
-    let error;
-
-    /**
-     *
-     * @param {String} team - Team of the joining player
-     * @param {*} players - list of players to check
-     * @return {boolean} If the array of players already has a spymaster already
-     */
-    function teamHasSpymaster(team, players) {
-      let hasSpymaster = false;
-      for (let player of players) {
-        if (player.team === team && player.role === 'spymaster') {
-          hasSpymaster = true;
-          break;
-        }
-      }
-      return hasSpymaster;
-    }
-
-    for (let player of this.players) {
-      if (player.name.toLowerCase() === req.nickname.toLowerCase()) {
-        error = 'Player already joined';
-        break;
-      } else if (
-        req.role === 'spymaster' &&
-        teamHasSpymaster(req.team, this.players)
-      ) {
-        error = 'There is already a Spymaster';
-        break;
-      } else {
-        error = '';
-      }
-    }
-
-    if (!error) {
-      this.players.push({
-        name: req.nickname,
-        socket: req.socketId,
-        team: req.team,
-        role: req.role,
-      });
-      io.sockets.connected[req.socketId].join(this.id);
-      this.updateClients();
-      this.turnUpdate(req.socketId);
-    }
-
-    return error;
-  }
-
-  /**
-   * End a teams turn
-   * @param {String} team - The team who's turn should be over
-   */
-  endTurn(team) {
-    let newTurn;
-    if (team.toLowerCase() === 'blue') {
-      newTurn = 'red';
-    } else if (team.toLowerCase() === 'red') {
-      newTurn = 'blue';
-    } else {
-      console.log('UH OH!!! Invalid turn end request recieved: ' + team);
-    }
-
-    this.turn = newTurn;
-
-    this.turnUpdate();
-  }
-
-  /**
-   * make a simplified version of the game object to send to the client
-   * @return {Object} - Stripped version of the game object
-   */
-  makeClientCopy() {
-    let clientGame = {
-      teams: this.teams,
-      usedWords: this.usedWords,
-      board: (() => {
-        let cards = [];
-        this.board.forEach((card, i) => {
-          let newCard = {
-            word: card.word,
-            team: (() => {
-              if (card.revealed) {
-                return card.team;
-              }
-            })(),
-          };
-          cards.push(newCard);
-        });
-        return cards;
-      })(),
-      players: this.players,
-      id: this.id,
-    };
-    console.log(`Sending client game`);
-
-    return clientGame;
-  }
-
-  /**
-   * Make a game object for a spymaster
-   * @return {Object} - stripped version of the game object
-   */
-  makeSpymasterCopy() {
-    let clientGame = (({id, players, board, teams}) => ({
-      id,
-      players,
-      board,
-      teams,
-    }))(this);
-    console.log('Sending Spymaster game');
-    return clientGame;
-  }
-
-  /**
-   * update the client versions of the game
-   */
-  updateClients() {
-    for (let player of this.players) {
-      if (player.role === 'spymaster') {
-        io.to(player.socket).emit('game update', this.makeSpymasterCopy());
-      } else {
-        io.to(player.socket).emit('game update', this.makeClientCopy());
-      }
-    }
-  }
-
-  /**
-   * Send a turn update to all the players
-   * @param {Socket} socket - Socket of the client to update
-   */
-  turnUpdate(socket) {
-    if (!socket) {
-      for (let player of this.players) {
-        io.to(player.socket).emit('turn update', this.turn, this.id);
-      }
-    } else {
-      io.to(socket).emit('turn update', this.turn, this.id);
-    }
-  }
-}
-
-/**
- * Clue card
- */
-class Card {
-  /**
-   * @param {string} word
-   * @param {string} team
-   */
-  constructor(word, team) {
-    this.team = team;
-    this.word = word || getRandomWord();
-  }
-}
-
-/**
- * fetch the list of words to use
- */
-function loadWordList() {
-  fs.readFile(__dirname + '/assets/words.txt', 'utf8', (err, data) => {
-    if (err) {
-      console.log('an error has occured while loading the word list: ' + err);
-      return;
-    }
-    let words = data.split('\n');
-    wordList = words;
-  });
-}
-
-/**
- * Pull a random word from the word list
- * @return {string} - the selected word
- */
-function getRandomWord() {
-  let word = wordList[Math.floor(Math.random() * wordList.length)];
-  return word;
-}
-
-/**
- * Shuffles array in place.
- * @param {Array} a - items An array containing the items.
- * @return {Array} - shuffled array
- */
-function shuffle(a) {
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-/**
- * Search through the list of games to see if one exists with a given id
- * @param {String} id - id of the game to find
- * @return {Game}
- */
-function findGame(id) {
-  let result;
-  return games.find((game) => {
-    return game.id == id.toLowerCase();
-  });
-}

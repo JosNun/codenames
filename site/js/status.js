@@ -6,7 +6,7 @@ let redPlayerList = document.querySelector('.red-player-list');
 let turnController = {
   indicator: document.querySelector('.turn-view'),
   button: document.querySelector('.end-turn-btn'),
-  updateUi: function() {
+  updateUi: function () {
     this.indicator.innerText = gameInfo.currentTurn;
     console.log(`updating UI for ${gameInfo.currentTurn} turn`);
     if (gameInfo.currentTurn === gameInfo.team) {
@@ -31,15 +31,15 @@ let turnController = {
       turnController.disableButton();
     }
   },
-  enableButton: function() {
+  enableButton: function () {
     this.button.classList.add('enabled');
     this.button.addEventListener('click', endTurn);
   },
-  disableButton: function() {
+  disableButton: function () {
     this.button.classList.remove('enabled');
     this.button.removeEventListener('click', endTurn);
   },
-  disableCards: function() {
+  disableCards: function () {
     document.querySelectorAll('div.card').forEach((card, i) => {
       card.removeEventListener('click', guessCard);
       card.classList.add('disabled');

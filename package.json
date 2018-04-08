@@ -1,8 +1,7 @@
 {
   "name": "codenames",
   "version": "1.0.0",
-  "description":
-    "Codenames... but digital! Play your favorite game on any device!",
+  "description": "Codenames... but digital! Play your favorite game on any device!",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",

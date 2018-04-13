@@ -117,14 +117,14 @@ class Game {
       );
     }
 
-    function nameIsUsed(name) {
-      return this.players.find(
+    function nameIsUsed(name, players) {
+      return players.find(
         player => player.name.toLowerCase() === name.toLowerCase()
       );
     }
 
     this.players.forEach(() => {
-      if (nameIsUsed(req.nickname)) {
+      if (nameIsUsed(req.nickname, this.players)) {
         error = 'Player already joined';
       } else if (
         req.role === 'spymaster' &&

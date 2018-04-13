@@ -1,0 +1,464 @@
+@import 'variables';
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+  font-family: sans-serif;
+  background-color: $bg-color;
+
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+body > div {
+  max-height: 100%;
+  overflow-y: scroll;
+  box-sizing: border-box;
+}
+
+/*
+
+
+Utils
+
+
+*/
+
+.hidden {
+  display: none;
+}
+
+/*
+
+
+Global Styles
+
+
+*/
+
+button {
+  border: 2px solid $accent-color;
+  background-color: #fff;
+  border-radius: 10px;
+  height: 25px;
+  outline: none;
+  transition-duration: 0.2s;
+
+  &:disabled {
+    border-color: #aaaaaa;
+  }
+
+  &:active {
+    transform: scale(0.95);
+    background-color: $bg-alt-color;
+  }
+
+  &:focus {
+    border-color: $bg-alt-color;
+  }
+}
+
+input[type='text'] {
+  height: 25px;
+  margin: 5px;
+  border: 2px solid $accent-color;
+  border-radius: 10px;
+  padding: 5px;
+  background-color: #fff;
+  outline: none;
+
+  &:focus {
+    border-color: $bg-alt-color;
+  }
+
+  &.invalid {
+    background-color: $team-color-red;
+  }
+}
+
+input[type='radio'] {
+  outline: none;
+
+  &:focus::after {
+    border-color: $bg-alt-color;
+  }
+
+  &::before {
+    content: '';
+    display: block;
+    width: 15px;
+    height: 15px;
+    background-color: $bg-color;
+    left: 2px;
+    top: 2px;
+    position: relative;
+  }
+
+  &::after {
+    content: '';
+    position: relative;
+    display: block;
+    border: 2px solid $accent-color;
+    left: -2px;
+    top: -17px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0px 6px #fff;
+    background-color: $accent-color;
+    transition-duration: 0.2s;
+  }
+
+  &:checked::after {
+    background-color: $accent-color;
+    box-shadow: inset 0 0 0px 2px #fff;
+  }
+
+  &:disabled::after {
+    border-color: #fff;
+    background-color: $team-color-red;
+    box-shadow: none;
+  }
+}
+
+/*
+
+Game Setup stuff
+
+*/
+
+.game-setup-container {
+  text-align: center;
+  transition-duration: 0.3s;
+  margin: 0 0 0 250px;
+  padding: 15px;
+}
+
+.join-game-setup {
+  position: relative;
+  height: 0;
+  overflow: hidden;
+  transition-duration: 0.3s;
+}
+
+label {
+  position: relative;
+}
+
+input + span::after {
+  content: attr(data-sub);
+  padding-left: 15px;
+  position: absolute;
+}
+
+/*
+
+Game Board stuff
+
+*/
+
+.game-board {
+  display: none;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  left: 265px;
+  height: calc(100% * 2 / 3);
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  grid-gap: 15px;
+  overflow: visible;
+}
+
+.card {
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  background-color: $card-color;
+  color: $font-color;
+  font-family: sans-serif;
+  font-size: calc((100vw - 280px) * 0.02);
+  font-weight: 600;
+  border-radius: 10px;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition-duration: 0.3s;
+
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+  &[class*='team'] {
+    cursor: default;
+  }
+
+  &.disabled {
+    cursor: default;
+  }
+
+  &.team-red {
+    color: $team-color-red;
+  }
+
+  &.team-blue {
+    color: $team-color-blue;
+  }
+
+  &.team-neutral {
+    color: #a0a0a0;
+  }
+
+  &.team-assassin {
+    color: #000;
+  }
+
+  &.revealed-red {
+    border: 5px solid $team-color-red;
+  }
+
+  &.revealed-blue {
+    border: 5px solid $team-color-blue;
+  }
+
+  &.revealed-neutral {
+    border: 5px solid #a0a0a0;
+  }
+
+  &.revealed-assassin {
+    border: 5px solid #000;
+  }
+}
+
+/*
+
+Chat box stuff
+
+*/
+
+.chat-box {
+  box-sizing: border-box;
+  position: absolute;
+  width: 250px;
+  bottom: 15px;
+  top: 15px;
+  border-radius: 0 10px 10px 0;
+  background-color: $bg-alt-color;
+  padding: 10px;
+  padding-bottom: 40px;
+  overflow: hidden;
+}
+
+input[type='text'].message-box {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: calc(100% - 10px);
+  padding-right: 27.5px;
+  height: 30px;
+}
+
+.chat-send-btn {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  box-sizing: border-box;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 120%;
+  color: $accent-color;
+  padding: 0;
+  margin: 10px;
+  border: none;
+  transition-duration: 0.3s;
+}
+
+.chat-messages {
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  left: 5px;
+  bottom: 50px;
+  padding-top: 5px;
+}
+
+.chat-message {
+  position: relative;
+  width: fit-content;
+  background-color: #ffcf75;
+  color: #fff;
+  font-family: sans-serif;
+  left: 0;
+  padding: 10px;
+  margin: 10px;
+  border-radius: 10px;
+}
+
+.chat-local {
+  align-self: flex-end;
+  background-color: $accent-color;
+}
+
+.chat-author {
+  position: absolute;
+  left: 0;
+  top: -16px;
+  font-size: 12px;
+  color: #fff;
+  padding-left: 3px;
+  border-radius: 2px;
+
+  &.red {
+    border-left: 3px solid $team-color-red;
+  }
+
+  &.blue {
+    border-left: 3px solid $team-color-blue;
+  }
+}
+
+.blue-text {
+  color: $team-color-blue;
+}
+
+.red-text {
+  color: $team-color-red;
+}
+
+/*
+
+Game Status
+
+*/
+
+.game-status {
+  position: absolute;
+  display: flex;
+  right: 0;
+  bottom: 15px;
+  height: calc(100% * 1 / 3 - 70px);
+  left: 275px;
+  border-radius: 10px 0 0 10px;
+  background-color: $bg-alt-color;
+  transition-duration: 0.3s;
+  transform: translateX(100%);
+}
+
+.game-status ul {
+  list-style-position: inside;
+}
+
+.status-card > li.player-name:after {
+  content: '(you)';
+  margin-left: 5px;
+  font-size: 0.5em;
+  vertical-align: middle;
+}
+
+li.spymaster:after {
+  content: '';
+  position: absolute;
+  display: inline-block;
+  background-size: contain;
+  width: 20px;
+  height: 20px;
+  margin-left: 2px;
+  background-repeat: no-repeat;
+}
+
+li.spymaster.blue:after {
+  background-image: url('../images/icons/spymaster-blue.svg');
+}
+
+li.spymaster.red:after {
+  background-image: url('../images/icons/spymaster-red.svg');
+}
+
+li {
+  list-style-type: none;
+}
+
+.status-card {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background-color: $card-color;
+  border-radius: 10px;
+  margin: 10px 5px;
+  padding: 0 15px;
+  flex-grow: 1;
+  /* overflow: scroll; */
+
+  &:first-child {
+    margin-left: 10px;
+  }
+
+  &:last-child {
+    margin-right: 10px;
+  }
+}
+
+.blue-player-list {
+  color: $team-color-blue;
+}
+
+.red-player-list {
+  color: $team-color-red;
+}
+
+.turn-view {
+  border-radius: 10px;
+  color: #fff;
+  padding: 2px 5px;
+}
+
+.turn-display {
+  margin: 5px 0;
+}
+
+.blue-bg {
+  background-color: $team-color-blue;
+}
+
+.red-bg {
+  background-color: $team-color-red;
+}
+
+.end-turn-btn {
+  position: absolute;
+  right: 10px;
+  /* top: 10px; */
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 2px;
+  bottom: 10px;
+  left: 10px;
+  background-color: #ccc;
+  border-radius: 10px;
+  padding: 10px;
+  vertical-align: middle;
+  cursor: default;
+  box-shadow: none;
+  transition-duration: 0.3s;
+
+  &.enabled {
+    background-color: $bg-alt-color;
+    cursor: pointer;
+    box-shadow: 2px 2px 1px rgba(100, 100, 100, 0.5),
+      -2px 2px 1px rgba(100, 100, 100, 0.5);
+  }
+}

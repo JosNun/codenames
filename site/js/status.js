@@ -1,12 +1,12 @@
-let blueRemainingEl = document.querySelector('.blue-cards-remaining');
-let redRemainingEl = document.querySelector('.red-cards-remaining');
-let bluePlayerList = document.querySelector('.blue-player-list');
-let redPlayerList = document.querySelector('.red-player-list');
+const blueRemainingEl = document.querySelector('.blue-cards-remaining');
+const redRemainingEl = document.querySelector('.red-cards-remaining');
+const bluePlayerList = document.querySelector('.blue-player-list');
+const redPlayerList = document.querySelector('.red-player-list');
 
-let turnController = {
+const turnController = {
   indicator: document.querySelector('.turn-view'),
   button: document.querySelector('.end-turn-btn'),
-  updateUi: function () {
+  updateUi() {
     this.indicator.innerText = gameInfo.currentTurn;
     console.log(`updating UI for ${gameInfo.currentTurn} turn`);
     if (gameInfo.currentTurn === gameInfo.team) {
@@ -23,7 +23,7 @@ let turnController = {
       this.indicator.classList.remove('blue-bg');
       this.indicator.classList.add('red-bg');
     } else {
-      console.log('Game info holds invalid turn info: ' + gameInfo.currentTurn);
+      console.log(`Game info holds invalid turn info: ${gameInfo.currentTurn}`);
     }
 
     if (gameInfo.currentTurn !== gameInfo.team) {
@@ -31,15 +31,15 @@ let turnController = {
       turnController.disableButton();
     }
   },
-  enableButton: function () {
+  enableButton() {
     this.button.classList.add('enabled');
     this.button.addEventListener('click', endTurn);
   },
-  disableButton: function () {
+  disableButton() {
     this.button.classList.remove('enabled');
     this.button.removeEventListener('click', endTurn);
   },
-  disableCards: function () {
+  disableCards() {
     document.querySelectorAll('div.card').forEach((card, i) => {
       card.removeEventListener('click', guessCard);
       card.classList.add('disabled');
@@ -64,10 +64,10 @@ function updateStatusUi(game) {
   }
 
   game.players.forEach((player, i) => {
-    let name = player.name;
-    let team = player.team;
+    const name = player.name;
+    const team = player.team;
 
-    let li = document.createElement('li');
+    const li = document.createElement('li');
     li.innerText = name;
 
     if (player.role === 'spymaster') {

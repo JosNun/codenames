@@ -1,4 +1,4 @@
-let gameInfo = {};
+const gameInfo = {};
 
 socket.on('turn update', (newTurn, game) => {
   console.log('turn update recieved');
@@ -13,13 +13,13 @@ function init() {
   console.log('initializing game');
   console.log(currentGame);
 
-  let gameBoard = document.querySelector('.game-board');
+  const gameBoard = document.querySelector('.game-board');
   gameBoard.style.display = 'grid';
 
   document.querySelector('.game-status').classList.add('show-desktop');
 
-  currentGame.board.forEach((card) => {
-    let div = document.createElement('div');
+  currentGame.board.forEach(card => {
+    const div = document.createElement('div');
     div.classList.add('card');
     div.innerText = card.word;
     if (card.revealed || (gameInfo.role === 'detective' && card.team)) {
@@ -37,16 +37,16 @@ function init() {
     gameBoard.appendChild(div);
   });
 
-  socket.on('game update', (newGame) => {
+  socket.on('game update', newGame => {
     updateGameUi(newGame);
     updateStatusUi(newGame);
   });
 }
 
 let updateGameUi = function(gameUpdate) {
-  let gameBoard = document.querySelector('.game-board');
+  const gameBoard = document.querySelector('.game-board');
   gameUpdate.board.forEach((card, i) => {
-    let cardEl = gameBoard.children[i];
+    const cardEl = gameBoard.children[i];
     if (gameInfo.role === 'spymaster') {
       cardEl.classList.add(`team-${card.team}`);
       cardEl.removeEventListener('click', guessCard);

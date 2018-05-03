@@ -11,15 +11,16 @@
   "author": "Josiah Nunemaker",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.16.2",
-    "socket.io": "^2.0.4"
+    "express": "^4.16.3",
+    "npm": "^6.0.0",
+    "socket.io": "^2.1.0"
   },
   "devDependencies": {
-    "css-loader": "^0.28.9",
+    "css-loader": "^0.28.11",
     "gulp": "^3.9.1",
-    "gulp-sass": "^3.1.0",
+    "gulp-sass": "^3.2.1",
     "gulp-sourcemaps": "^2.6.4",
-    "node-sass": "^4.7.2",
-    "nodemon": "^1.14.12"
+    "node-sass": "^4.9.0",
+    "nodemon": "^1.17.3"
   }
 }

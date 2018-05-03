@@ -5,12 +5,12 @@ TODO:
 [ ] Clean up everything, and reorder it
 */
 
-let gameNameBox = document.querySelector('.game-name-textbox');
-let createGameBtn = document.querySelector('.create-game-btn');
+const gameNameBox = document.querySelector('.game-name-textbox');
+const createGameBtn = document.querySelector('.create-game-btn');
 
 let currentGame;
 
-let gameQuery = debounce((e) => {
+const gameQuery = debounce(e => {
   socket.emit('game query', socket.id, e.target.value);
 }, 250);
 
@@ -18,7 +18,7 @@ addListenerAsync(gameQuery, gameNameBox, 'input');
 addListenerAsync(updateGamesList, gameNameBox, 'focus');
 addListenerAsync(
   () => {
-    let gameName = gameNameBox.value;
+    const gameName = gameNameBox.value;
     if (gameLogin.gameExists) {
       requestGameJoin(gameName);
     } else {
@@ -35,20 +35,20 @@ addListenerAsync(
  * @param {String} gameName - the name/id of the game to join
  */
 function requestGameJoin(gameName) {
-  let name = document.querySelector('#nickname-input').value;
-  let team = document.querySelector('input[name="team"]:checked').value;
-  let role = document.querySelector('input[name="role"]:checked').value;
+  const name = document.querySelector('#nickname-input').value;
+  const team = document.querySelector('input[name="team"]:checked').value;
+  const role = document.querySelector('input[name="role"]:checked').value;
 
-  let request = {
+  const request = {
     gameId: gameName,
     socketId: socket.id,
     nickname: name,
-    team: team,
-    role: role,
+    team,
+    role,
   };
 
   gameInfo.role = role;
-  gameInfo.room = gameName;
+  gameInfo.room = gameName.toLowerCase();
   gameInfo.playerName = name;
   gameInfo.team = team;
 
@@ -56,7 +56,7 @@ function requestGameJoin(gameName) {
 }
 
 // When we get information about a game
-socket.on('game query response', (msg) => {
+socket.on('game query response', msg => {
   console.log('game query recieved');
   if (msg) {
     currentGame = msg;
@@ -79,12 +79,12 @@ socket.on('game join response', (success, error) => {
     socket.emit('request game update', socket.id, gameInfo.room);
     console.log('Game successfully joined');
   } else {
-    console.log('Error joining game: ' + error);
+    console.log(`Error joining game: ${error}`);
   }
 });
 
 // When the server pushes new game data
-socket.on('game update', (game) => {
+socket.on('game update', game => {
   console.log('game update recieved');
   currentGame = game;
   gameLogin.update(currentGame);
@@ -95,14 +95,14 @@ socket.on('game update', (game) => {
  * @param {Array} games - An array of game names
  */
 function updateGamesList(games) {
-  socket.emit('games list request', (games) => {
-    let gamesList = document.getElementById('games-list');
+  socket.emit('games list request', games => {
+    const gamesList = document.getElementById('games-list');
     while (gamesList.firstChild) {
       gamesList.removeChild(gamesList.firstChild);
     }
 
-    games.forEach((game) => {
-      let opt = document.createElement('option');
+    games.forEach(game => {
+      const opt = document.createElement('option');
       opt.setAttribute('value', game);
       gamesList.appendChild(opt);
     });
@@ -120,13 +120,11 @@ function getPlayerAmount(game, color) {
     return game.players.reduce((acc, player) => {
       if (player.team === color) {
         return acc + 1;
-      } else {
-        return acc;
       }
+      return acc;
     }, 0);
-  } else {
-    return game.length;
   }
+  return game.length;
 }
 
 /**
@@ -137,7 +135,7 @@ function getPlayerAmount(game, color) {
  */
 function teamHasSpymaster(team, players) {
   let hasSpymaster = false;
-  for (let player of players) {
+  for (const player of players) {
     if (player.team === team && player.role === 'spymaster') {
       hasSpymaster = true;
       break;
@@ -156,7 +154,7 @@ function gameHasPlayer(playerName, game) {
   game = game || currentGame;
   let playerExists = false;
 
-  game.players.forEach((player) => {
+  game.players.forEach(player => {
     if (player.name.toLowerCase() === playerName.toLowerCase()) {
       playerExists = true;
     }
@@ -175,17 +173,17 @@ let gameLogin = {
   spymasterRadio: document.getElementById('role-spymaster-radio'),
 
   gameExists: false,
-  hide: function() {
+  hide() {
     this.container.style.height = '0';
   },
-  show: function() {
+  show() {
     this.container.style.height = this.container.scrollHeight;
   },
-  update: function(game) {
+  update(game) {
     game = game || currentGame;
     let team;
-    let playerName = this.nameBox.value;
-    let teamRadio = document.querySelector('input[name="team"]:checked');
+    const playerName = this.nameBox.value;
+    const teamRadio = document.querySelector('input[name="team"]:checked');
     if (teamRadio) {
       team = teamRadio.value;
     }
@@ -205,11 +203,11 @@ let gameLogin = {
 
     gameLogin.blueTeamRadio.labels[0].setAttribute(
       'data-sub',
-      getPlayerAmount(game, 'blue') + ' players'
+      `${getPlayerAmount(game, 'blue')} players`
     );
     this.redTeamRadio.labels[0].setAttribute(
       'data-sub',
-      getPlayerAmount(game, 'red') + ' players'
+      `${getPlayerAmount(game, 'red')} players`
     );
 
     if (team) {
@@ -228,13 +226,13 @@ let gameLogin = {
   },
 };
 
-document.querySelectorAll('.join-game-setup input').forEach((el) => {
+document.querySelectorAll('.join-game-setup input').forEach(el => {
   if (el.type === 'text') {
-    el.addEventListener('input', (e) => {
+    el.addEventListener('input', e => {
       gameLogin.update(currentGame);
     });
   } else if (el.type === 'radio') {
-    el.addEventListener('click', (e) => {
+    el.addEventListener('click', e => {
       gameLogin.update(currentGame);
     });
   }

@@ -6,13 +6,13 @@
 function debounce(func, wait, immediate) {
   let timeout;
   return function() {
-    let context = this;
-    let args = arguments;
-    let later = function() {
+    const context = this;
+    const args = arguments;
+    const later = function() {
       timeout = null;
       if (!immediate) func.apply(context, args);
     };
-    let callNow = immediate && !timeout;
+    const callNow = immediate && !timeout;
     clearTimeout(timeout);
     timeout = setTimeout(later, wait);
     if (callNow) func.apply(context, args);
@@ -30,7 +30,6 @@ function addListenerAsync(func, el, type) {
     setTimeout(() => {
       addListenerAsync(func, el);
     }, 50);
-    return;
   } else {
     el.addEventListener(type, func);
   }

@@ -1,8 +1,8 @@
-let chatContainer = document.querySelector('.chat-box');
-let chatbox = document.querySelector('.message-box');
-let chatForm = document.querySelector('.chat-form');
-let chatSendBtn = document.querySelector('.chat-send-btn');
-let chatList = document.querySelector('.chat-messages');
+const chatContainer = document.querySelector('.chat-box');
+const chatbox = document.querySelector('.message-box');
+const chatForm = document.querySelector('.chat-form');
+const chatSendBtn = document.querySelector('.chat-send-btn');
+const chatList = document.querySelector('.chat-messages');
 
 socket.on('chat message', (payload, isLocal) => {
   if (!isLocal && !chatContainer.classList.contains('show')) {
@@ -17,18 +17,18 @@ socket.on('chat message', (payload, isLocal) => {
  * @return {boolean}
  */
 function sendChat(e) {
-  console.log('sending chat');
+  // console.log('sending chat');
   e.preventDefault();
 
-  let payload = {
+  const payload = {
     message: chatbox.value,
-    room: gameInfo.room || 'global',
+    room: gameInfo.room.toLowerCase() || 'global',
     name: gameInfo.playerName || 'Anonymous',
     team: gameInfo.team,
   };
   chatbox.value = '';
   chatSendBtn.style.transform = 'rotate(0deg)';
-  console.log('Submitting chat message: ' + payload.message);
+  // console.log(`Submitting chat message: ${payload.message}`);
   socket.emit('chat message', payload);
   addChatMessage(payload, true);
   return false;
@@ -40,21 +40,21 @@ function sendChat(e) {
  * @param {boolean} isLocal - if the chat message came from the user
  */
 function addChatMessage(payload, isLocal) {
-  console.log('chat recieved');
-  console.log(payload);
+  // console.log('chat recieved');
+  // console.log(payload);
 
   if (
     (payload.room === 'global' && !gameInfo.room) ||
     payload.room === gameInfo.room
   ) {
-    let div = document.createElement('div');
+    const div = document.createElement('div');
     div.innerText = payload.message;
     div.classList.add('chat-message');
 
     if (isLocal) {
       div.classList.add('chat-local');
     } else {
-      let author = document.createElement('div');
+      const author = document.createElement('div');
       author.innerText = payload.name;
       author.classList.add('chat-author');
       if (payload.team === 'blue') {
@@ -73,18 +73,18 @@ function addChatMessage(payload, isLocal) {
 }
 
 function showChatIndicator() {
-  let indicator = document.querySelector('.chat-indicator');
+  const indicator = document.querySelector('.chat-indicator');
   indicator.classList.remove('hidden');
 }
 
 function hideChatIndicator() {
-  let indicator = document.querySelector('.chat-indicator');
+  const indicator = document.querySelector('.chat-indicator');
   indicator.classList.add('hidden');
 }
 
 chatbox.addEventListener(
   'input',
-  debounce((e) => {
+  debounce(e => {
     if (chatbox.value === '') {
       chatSendBtn.style.transform = 'rotate(0deg)';
     } else {

@@ -28,6 +28,8 @@ const codenames = require('./codenames');
 
 codenames.setIo(io);
 
+const PORT = process.env.PORT || 3000
+
 app.use(express.static('site'));
 
 codenames.loadWordList();
@@ -141,6 +143,6 @@ io.on('connection', socket => {
   });
 });
 
-http.listen(3000, () => {
+http.listen(PORT, () => {
   console.log('Listening on *:3000');
 });

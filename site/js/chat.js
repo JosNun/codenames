@@ -22,7 +22,7 @@ function sendChat(e) {
 
   const payload = {
     message: chatbox.value,
-    room: gameInfo.room.toLowerCase() || 'global',
+    room: gameInfo.room ? gameInfo.room.toLowerCase() : 'global',
     name: gameInfo.playerName || 'Anonymous',
     team: gameInfo.team,
   };

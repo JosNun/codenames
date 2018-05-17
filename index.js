@@ -5,6 +5,8 @@ TODO:
 [x] Bolden the players name, and indicate what team they are on
 [x] Abort card guess if it is not that team's turn
 [x] Clean up everything, and reorder it, and break it into modules
+[x] Fix global chat
+[ ] Remove old/finished games
 [ ] reset sign in form on game join
 [ ] Overhaul game selection
 [ ] check player socket id before joining game
@@ -28,7 +30,7 @@ const codenames = require('./codenames');
 
 codenames.setIo(io);
 
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 3000;
 
 app.use(express.static('site'));
 

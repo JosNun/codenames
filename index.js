@@ -6,6 +6,7 @@ TODO:
 [x] Abort card guess if it is not that team's turn
 [x] Clean up everything, and reorder it, and break it into modules
 [x] Fix global chat
+[x] nodemon + babel for build tools
 [ ] Remove old/finished games
 [ ] reset sign in form on game join
 [ ] Overhaul game selection
@@ -14,7 +15,6 @@ TODO:
 [ ] Allow a way to set a player's name in the menu
 [ ] Show game info in setup screen
 [ ] use winston for logging
-[ ] gulp + nodemon for build tools
 [ ] history.push/pop state for different rooms
 [ ] webRTC real-time audio
 [ ] gzip the HTML, CSS, and client JS

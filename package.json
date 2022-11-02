@@ -20,7 +20,7 @@
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "css-loader": "^0.28.11",
-    "gulp": "^3.9.1",
+    "gulp": "^4.0.2",
     "gulp-sass": "^3.2.1",
     "gulp-sourcemaps": "^2.6.4",
     "node-sass": "^4.9.0",
